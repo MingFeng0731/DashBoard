@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CAR1 DATA</title>
+    <!-- 引入 echarts.js -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+</head>
+<body>
+    
+    <!-- 為ECharts准備一個具備大小（寬高）的Dom -->
+    <div id="main" style="width: 500px;height:500px;"></div>
+    
+    <script type="text/javascript">
+        
+        var myChart = echarts.init(document.getElementById('main'),'dark');
+       
+        var ids=[], lats=[],lngs=[],powers=[],waters=[],speeds=[],datetimes=[],alls=[];
+        function TestAjax(){
+    
+            $.ajax({
+    
+                type: "post",
+                async: false,     
+                url: "CAR1.php",   
+                data: {
+    },         
+                dataType: "json", 
+                success: function(result) {
+    
+                    if (result) {
+    
+                        for (var i = 0; i < result.length; i++) {
+    
+                            ids.push(result[i].id);
+                            lats.push(result[i].lat);
+                            lngs.push(result[i].lng);
+							powers.push(result[i].power);
+                            waters.push(result[i].water);
+                            speeds.push(result[i].speed);
+                            datetimes.push(result[i].datetime);
+							alls.push(Number(result[i].speed)+Number(result[i].water)+Number(result[i].power));
+                            console.log(result[i].id);
+                            console.log(result[i].lat);
+							console.log(result[i].lng);
+                            console.log(result[i].power);
+                            console.log(result[i].water);
+                            console.log(result[i].speed);
+                            console.log(result[i].datetime);
+                        }
+                    }
+                }
+            })
+            return ids, lats, lngs,powers,waters,speeds,datetimes,alls;
+        }
+
+        TestAjax();
+
+        
+ 
+      
+        var option = {
+    
+            title: {
+    
+                text: 'CAR1'
+            },
+            tooltip: {
+    
+                trigger: 'axis'
+            },
+            legend: {
+    
+                data:['power','water','speed',],
+            },
+            dataZoom: [
+                {
+                    type: 'slider',
+                    start: 0,
+                    end: 10
+                },
+                {
+                    type: 'inside',
+                    start: 1,
+                    end: 70
+                }
+            ],
+            xAxis: [{
+    
+                data : datetimes
+
+            }],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: 'Remaining',
+                    min: 0,
+                    max: 100,
+                    interval: 25,
+                    axisLabel: {
+                    formatter: '{value} %'
+                    }
+                },
+                /*{
+                    type: 'value',
+                    name: 'Support',
+                    min: 0,
+                    max: 100,
+                    interval: 25,
+                    axisLabel: {
+                    formatter: '{value} %'
+                    }
+                }*/
+        ],
+            series: [{
+    
+                name : "power",
+                type : "line",
+                data : powers
+            },
+			{
+    
+				name : "water",
+				type : "line",
+				data : waters
+			},
+			{
+    
+				name : "speed",
+				type : "line",
+				data : speeds
+			}
+			]
+        };
+ 
+       
+        myChart.setOption(option);
+    </script>
+</body>
+</html>
